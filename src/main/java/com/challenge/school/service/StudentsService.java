@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +22,11 @@ public class StudentsService {
     @Autowired
     private GroupRepository groupRepository;
 
-    public List<Student> list(){
-        return studentRepository.findAll();
+    public List<StudentModel> list(){
+        List<Student> students = studentRepository.findAll();
+        List<StudentModel> studentDtos = new ArrayList<>();
+        students.stream().forEach((s)->studentDtos.add(new StudentModel(s.getFirstName(),s.getLastName(),s.getGroup().getId())));
+        return studentDtos;
     }
 
     public StudentModel getStudentById(Long studentId) throws ApiException{
