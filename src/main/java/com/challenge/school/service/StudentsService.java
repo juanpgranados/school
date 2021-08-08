@@ -4,6 +4,7 @@ import com.challenge.school.entity.Group;
 import com.challenge.school.entity.Student;
 import com.challenge.school.exception.ApiException;
 import com.challenge.school.model.StudentModel;
+import com.challenge.school.model.StudentResponseModel;
 import com.challenge.school.repository.GroupRepository;
 import com.challenge.school.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,36 +23,39 @@ public class StudentsService {
     @Autowired
     private GroupRepository groupRepository;
 
-    public List<StudentModel> list(){
+    public List<StudentResponseModel> list(){
         List<Student> students = studentRepository.findAll();
-        List<StudentModel> studentDtos = new ArrayList<>();
-        students.stream().forEach((s)->studentDtos.add(new StudentModel(s.getFirstName(),s.getLastName(),s.getGroup().getId())));
+        List<StudentResponseModel> studentDtos = new ArrayList<>();
+        students.forEach((s) -> studentDtos.add(new StudentResponseModel(s.getId(), s.getFirstName(),
+                s.getLastName(), s.getGroup().getId())));
         return studentDtos;
     }
 
-    public StudentModel getStudentById(Long studentId) throws ApiException{
+    public StudentResponseModel getStudentById(Long studentId) throws ApiException{
         Optional<Student> opStudent = studentRepository.findById(studentId);
         if(opStudent.isPresent()){
             Student student = opStudent.get();
-            StudentModel studentDto = new StudentModel(student.getFirstName(),student.getLastName(),student.getGroup().getId());
+            StudentResponseModel studentDto = new StudentResponseModel(student.getId(), student.getFirstName(),
+                    student.getLastName(), student.getGroup().getId());
             return studentDto;
         }else{
-            throw new ApiException(HttpStatus.BAD_REQUEST, STUDENT_NOT_FOUND);
+            throw new ApiException(HttpStatus.NOT_FOUND, STUDENT_NOT_FOUND);
         }
     }
 
-    public void create(StudentModel studentModel) throws ApiException {
+    public StudentResponseModel create(StudentModel studentModel) throws ApiException {
         Optional<Group> opGroup = groupRepository.findById(studentModel.getGroupId());
         if(opGroup.isPresent()) {
             Student student = new Student();
             student.setFirstName(studentModel.getFirstName());
             student.setLastName(studentModel.getLastName());
             student.setGroup(opGroup.get());
-            studentRepository.save(student);
+            Student savedStudent = studentRepository.save(student);
+            return new StudentResponseModel(savedStudent.getId(), savedStudent.getFirstName(),
+                    savedStudent.getLastName(), savedStudent.getGroup().getId());
         }else {
             throw new ApiException(HttpStatus.BAD_REQUEST, GroupService.GROUP_NOT_FOUND);
         }
-
     }
 
     public void delete(Long studentId) throws ApiException {
@@ -63,7 +67,7 @@ public class StudentsService {
         }
     }
 
-    public void update(StudentModel studentModel, Long studentId) throws ApiException{
+    public StudentResponseModel update(StudentModel studentModel, Long studentId) throws ApiException{
         Optional<Student> opStudent = studentRepository.findById(studentId);
         Optional<Group> opGroup = groupRepository.findById(studentModel.getGroupId());
         if(opStudent.isPresent() && opGroup.isPresent()){
@@ -71,10 +75,12 @@ public class StudentsService {
             student.setFirstName(studentModel.getFirstName());
             student.setLastName(studentModel.getLastName());
             student.setGroup(opGroup.get());
-            studentRepository.save(student);
+            Student savedStudent = studentRepository.save(student);
+            return new StudentResponseModel(savedStudent.getId(), savedStudent.getFirstName(),
+                    savedStudent.getLastName(), savedStudent.getGroup().getId());
         }else{
             if(opStudent.isEmpty()) throw new ApiException(HttpStatus.BAD_REQUEST, STUDENT_NOT_FOUND);
-            if(opGroup.isEmpty()) throw new ApiException(HttpStatus.BAD_REQUEST, GroupService.GROUP_NOT_FOUND);
+            else throw new ApiException(HttpStatus.BAD_REQUEST, GroupService.GROUP_NOT_FOUND);
         }
     }
 }
