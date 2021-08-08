@@ -83,4 +83,8 @@ public class StudentsService {
             else throw new ApiException(HttpStatus.BAD_REQUEST, GroupService.GROUP_NOT_FOUND);
         }
     }
+
+    public long countStudentsByGroups(List<Long> groupIds){
+        return studentRepository.countByGroupIdIn(groupIds);
+    }
 }

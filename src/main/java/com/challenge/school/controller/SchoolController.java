@@ -2,13 +2,12 @@ package com.challenge.school.controller;
 
 import com.challenge.school.exception.ApiException;
 import com.challenge.school.model.*;
-import com.challenge.school.service.GroupService;
-import com.challenge.school.service.MarksService;
-import com.challenge.school.service.StudentsService;
-import com.challenge.school.service.SubjectService;
+import com.challenge.school.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -22,6 +21,8 @@ public class SchoolController{
     GroupService groupService;
     @Autowired
     SubjectService subjectService;
+    @Autowired
+    SubjectTeacherService subjectTeacherService;
 
     private static final String SUCCESS="success";
 
@@ -77,6 +78,11 @@ public class SchoolController{
     @GetMapping(value = "/student/{studentId}/subject/{subjectId}")
     public MarkModel getMarkByStudentAndSubject(@PathVariable Long studentId, @PathVariable Long subjectId){
         return marksService.getStudentSubjectMark(studentId, subjectId);
+    }
+
+    @GetMapping(value = "/teacher/{teacherId}/student-count")
+    public CountResponse getNumberOfStudents(@PathVariable Long teacherId){
+        return subjectTeacherService.countStudentsByTeacherId(teacherId);
     }
     //### ---GROUPS--- ###
     @GetMapping(value = "/group/{groupId}")
@@ -211,4 +217,46 @@ public class SchoolController{
         }
     }
 
+    //### ---SUBJECT-TEACHER--- ###
+    @GetMapping(value = "/subject/{subjectId}/group/{groupId}")
+    public SubjectTeacherModel getSubjectTeacher(@PathVariable Long subjectId, @PathVariable Long groupId){
+        try{
+            return subjectTeacherService.getSubjectTeacherById(subjectId, groupId);
+        }catch (ApiException apiException){
+            throw new ApiException(apiException.getStatus(), apiException.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/subjects/groups")
+    public List<SubjectTeacherModel> getAllSubjectTeacher(){
+        return subjectTeacherService.list();
+    }
+
+    @PostMapping(value = "/subject/group")
+    public SubjectTeacherModel createSubjectTeacher(@RequestBody SubjectTeacherModel subjectTeacherModel){
+        try{
+            return subjectTeacherService.create(subjectTeacherModel);
+        }catch (ApiException apiException){
+            throw new ApiException(apiException.getStatus(), apiException.getMessage());
+        }
+    }
+
+    @PutMapping(value = "/subject/group")
+    public SubjectTeacherModel updateSubjectTeacher(@RequestBody SubjectTeacherModel subjectTeacherModel){
+        try{
+            return subjectTeacherService.update(subjectTeacherModel);
+        }catch (ApiException apiException){
+            throw new ApiException(apiException.getStatus(), apiException.getMessage());
+        }
+    }
+
+    @DeleteMapping(value = "/subject/{subjectId}/group/{groupId}")
+    public OperationResult deleteSubjectTeacher(@PathVariable Long subjectId, @PathVariable Long groupId){
+        try{
+            subjectTeacherService.delete(subjectId, groupId);
+            return new OperationResult(SUCCESS);
+        }catch (ApiException apiException){
+            throw new ApiException(apiException.getStatus(), apiException.getMessage());
+        }
+    }
 }
