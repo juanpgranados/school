@@ -1,17 +1,20 @@
 package com.challenge.school.controller;
 
 import com.challenge.school.model.*;
-import com.challenge.school.service.GroupService;
-import com.challenge.school.service.MarksService;
-import com.challenge.school.service.StudentsService;
-import com.challenge.school.service.SubjectService;
+import com.challenge.school.security.JwtAuthenticationEntryPoint;
+import com.challenge.school.security.JwtTokenUtil;
+import com.challenge.school.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -42,6 +45,24 @@ public class SchoolControllerTests {
     GroupService groupService;
     @MockBean
     SubjectService subjectService;
+    @MockBean
+    SubjectTeacherService subjectTeacherService;
+    @MockBean
+    JwtUserDetailsService jwtUserDetailsService;
+    @MockBean
+    JwtTokenUtil jwtTokenUtil;
+    @MockBean
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    static final String AUTH_HEADER = "Bearer token";
+
+    @BeforeEach
+    public void mockSecurity(){
+        Mockito.when(jwtTokenUtil.getUsernameFromToken(any(String.class))).thenReturn("testuser");
+        Mockito.when(jwtTokenUtil.validateToken(any(String.class), any(UserDetails.class))).thenReturn(true);
+        Mockito.when(jwtUserDetailsService.loadUserByUsername("testuser")).thenReturn(new User("testUser", "p",
+                new ArrayList<>()));
+    }
 
     @Test
     public void testListStudents() throws Exception {
@@ -53,7 +74,9 @@ public class SchoolControllerTests {
         Mockito.when(studentsService.list()).thenReturn(loadedStudents);
         String url = "/students";
         //when
-        MvcResult result = mockMvc.perform(get(url)).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                get(url).header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
@@ -69,6 +92,7 @@ public class SchoolControllerTests {
                 post(url)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newStudent))
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
         ).andExpect(status().isOk());
     }
 
@@ -80,7 +104,9 @@ public class SchoolControllerTests {
         String expectedJson = objectMapper.writeValueAsString(student);
         String url = "/student/{studentId}";
         //When
-        MvcResult result = mockMvc.perform(get(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                get(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
@@ -89,11 +115,15 @@ public class SchoolControllerTests {
     @Test
     public void testDeleteStudent() throws Exception {
         //Given
-        StudentModel student = getTestStudent();
-        //Mockito.when(studentsService.getStudentById(1L)).thenReturn(student);
+        String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/student/{studentId}";
         //When
-        mockMvc.perform(delete(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                delete(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
+        String actualJson = result.getResponse().getContentAsString();
+        //Then
+        assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
     }
 
     @Test
@@ -105,6 +135,7 @@ public class SchoolControllerTests {
         mockMvc.perform(
                 put(url,"1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
                         .content(objectMapper.writeValueAsString(studentUpdate))
         ).andExpect(status().isOk());
     }
@@ -127,8 +158,9 @@ public class SchoolControllerTests {
         //When
         MvcResult result = mockMvc.perform(
                 post(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(groupDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+                        .content(objectMapper.writeValueAsString(groupDto))
         ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
@@ -142,7 +174,9 @@ public class SchoolControllerTests {
         String expectedJson = objectMapper.writeValueAsString(new GroupModel("Alpha", 1L));
         String url = "/group/{groupId}";
         //When
-        MvcResult result = mockMvc.perform(get(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                get(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
@@ -160,6 +194,7 @@ public class SchoolControllerTests {
         MvcResult result = mockMvc.perform(
                 put(url, "1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
                         .content(objectMapper.writeValueAsString(groupDto))
         ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
@@ -173,7 +208,9 @@ public class SchoolControllerTests {
         String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/group/{groupId}";
         //When
-        MvcResult result = mockMvc.perform(delete(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                delete(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
@@ -190,6 +227,7 @@ public class SchoolControllerTests {
         MvcResult result = mockMvc.perform(
                 post(url)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
                         .content(objectMapper.writeValueAsString(subjectDto))
         ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
@@ -204,7 +242,9 @@ public class SchoolControllerTests {
         String expectedJson = objectMapper.writeValueAsString(new SubjectModel(1L, "Art"));
         String url = "/subject/{subjectId}";
         //When
-        MvcResult result = mockMvc.perform(get(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                get(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
@@ -222,6 +262,7 @@ public class SchoolControllerTests {
         MvcResult result = mockMvc.perform(
                 put(url, "1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
                         .content(objectMapper.writeValueAsString(subjectDto))
         ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
@@ -235,7 +276,9 @@ public class SchoolControllerTests {
         String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/subject/{subjectId}";
         //When
-        MvcResult result = mockMvc.perform(delete(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                delete(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
@@ -252,6 +295,7 @@ public class SchoolControllerTests {
         MvcResult result = mockMvc.perform(
                 post(url)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
                         .content(objectMapper.writeValueAsString(markDto))
         ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
@@ -266,7 +310,9 @@ public class SchoolControllerTests {
         String expectedJson = objectMapper.writeValueAsString(new MarkModel(1L, 1L, 9.8F, null));
         String url = "/mark/{markId}";
         //When
-        MvcResult result = mockMvc.perform(get(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                get(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
@@ -284,6 +330,7 @@ public class SchoolControllerTests {
         MvcResult result = mockMvc.perform(
                 put(url, "1")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
                         .content(objectMapper.writeValueAsString(markDto))
         ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
@@ -297,7 +344,9 @@ public class SchoolControllerTests {
         String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/mark/{markId}";
         //When
-        MvcResult result = mockMvc.perform(delete(url,"1")).andExpect(status().isOk()).andReturn();
+        MvcResult result = mockMvc.perform(
+                delete(url,"1").header(HttpHeaders.AUTHORIZATION, AUTH_HEADER)
+        ).andExpect(status().isOk()).andReturn();
         String actualJson = result.getResponse().getContentAsString();
         //Then
         assertThat(actualJson).isEqualToIgnoringWhitespace(expectedJson);
