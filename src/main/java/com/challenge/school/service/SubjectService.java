@@ -21,7 +21,7 @@ public class SubjectService {
     public List<SubjectModel> list(){
         List<Subject> subjects = subjectRepository.findAll();
         List<SubjectModel> subjectDtos = new ArrayList<>();
-        subjects.forEach((s)->subjectDtos.add(new SubjectModel(s.getId(), s.getTitle())));
+        subjects.forEach(s->subjectDtos.add(new SubjectModel(s.getId(), s.getTitle())));
         return subjectDtos;
     }
 

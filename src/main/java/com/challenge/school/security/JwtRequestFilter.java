@@ -18,7 +18,7 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-    static final String headerWord = "Bearer ";
+    static final String HEADER_WORD = "Bearer ";
     @Autowired
     private JwtUserDetailsService jwtUserDetailsService;
 
@@ -32,21 +32,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String user = null;
         String jwtToken = null;
-        if (requestTokenHeader != null && requestTokenHeader.startsWith(headerWord)) {
+        if (requestTokenHeader != null && requestTokenHeader.startsWith(HEADER_WORD)) {
             jwtToken = requestTokenHeader.substring(7);
             try {
                 user = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
+                logger.error("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
+                logger.error("JWT Token has expired");
             }
         } else {
             logger.warn("JWT Token does not begin with Bearer String");
         }
         if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(user);
-            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+            if (Boolean.TRUE.equals(jwtTokenUtil.validateToken(jwtToken, userDetails))) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken

@@ -3,8 +3,6 @@ package com.challenge.school.service;
 import com.challenge.school.entity.*;
 import com.challenge.school.exception.ApiException;
 import com.challenge.school.model.CountResponse;
-import com.challenge.school.model.OperationResult;
-import com.challenge.school.model.SubjectModel;
 import com.challenge.school.model.SubjectTeacherModel;
 import com.challenge.school.repository.GroupRepository;
 import com.challenge.school.repository.SubjectRepository;
@@ -32,7 +30,7 @@ public class SubjectTeacherService {
     public CountResponse countStudentsByTeacherId(Long teacherId){
         List<SubjectTeacher> subjectTeacherList = subjectTeacherRepository.findByTeacherId(teacherId);
         List<Long> groupIds = new ArrayList<>();
-        subjectTeacherList.forEach((st)->groupIds.add(st.getSubjectGroupKey().getGroup().getId()));
+        subjectTeacherList.forEach(st->groupIds.add(st.getSubjectGroupKey().getGroup().getId()));
         return new CountResponse(studentsService.countStudentsByGroups(groupIds));
     }
 
@@ -60,7 +58,7 @@ public class SubjectTeacherService {
     public List<SubjectTeacherModel> list(){
         List<SubjectTeacher> subjectTeacherList = subjectTeacherRepository.findAll();
         List<SubjectTeacherModel> subjectTeacherModelList = new ArrayList<>();
-        subjectTeacherList.forEach((st)->subjectTeacherModelList.add(
+        subjectTeacherList.forEach(st->subjectTeacherModelList.add(
                 new SubjectTeacherModel(st.getSubjectGroupKey().getSubject().getId(),
                         st.getSubjectGroupKey().getGroup().getId(), st.getTeacherId()))
         );

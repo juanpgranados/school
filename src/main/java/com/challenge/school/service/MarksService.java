@@ -32,7 +32,7 @@ public class MarksService {
         List<Mark> marks = markRepository.findAll();
         List<MarkModel> markDtos = new ArrayList<>();
         ModelMapper modelMapper = new ModelMapper();
-        marks.forEach((m)->markDtos.add(modelMapper.map(m,MarkModel.class)));
+        marks.forEach(m->markDtos.add(modelMapper.map(m,MarkModel.class)));
         return markDtos;
     }
 
@@ -49,7 +49,7 @@ public class MarksService {
     public List<MarkModel> listByStudent(Long sid){
         List<Mark> marks = markRepository.findByStudentId(sid);
         List<MarkModel> marksDto = new ArrayList<>();
-        marks.forEach((m)->marksDto.add(new MarkModel(m.getStudent().getId(),
+        marks.forEach(m->marksDto.add(new MarkModel(m.getStudent().getId(),
                 m.getSubject().getId(), m.getMark(), m.getDate())));
         return marksDto;
     }

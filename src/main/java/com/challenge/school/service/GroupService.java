@@ -21,7 +21,7 @@ public class GroupService {
     public List<GroupModel> list(){
         List<Group> groups = groupRepository.findAll();
         List<GroupModel> groupDtos = new ArrayList<>();
-        groups.forEach((g)->groupDtos.add(new GroupModel(g.getName(), g.getId())));
+        groups.forEach(g->groupDtos.add(new GroupModel(g.getName(), g.getId())));
         return groupDtos;
     }
 

@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SchoolController.class)
-public class SchoolControllerTests {
+class SchoolControllerTests {
 
     @Autowired
     MockMvc mockMvc;
@@ -65,7 +65,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testListStudents() throws Exception {
+    void testListStudents() throws Exception {
         //Given
         List<StudentResponseModel> loadedStudents = new ArrayList<>();
         loadedStudents.add(new StudentResponseModel(1L, "Juan","Granados", 1L));
@@ -83,7 +83,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testCreateStudent() throws Exception {
+    void testCreateStudent() throws Exception {
         //Given
         StudentModel newStudent = getTestStudent();
         String url = "/student";
@@ -97,7 +97,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testGetStudent() throws Exception {
+    void testGetStudent() throws Exception {
         //Given
         StudentResponseModel student = getTestStudent();
         Mockito.when(studentsService.getStudentById(1L)).thenReturn(student);
@@ -113,7 +113,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testDeleteStudent() throws Exception {
+    void testDeleteStudent() throws Exception {
         //Given
         String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/student/{studentId}";
@@ -127,7 +127,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testUpdateStudent() throws Exception {
+    void testUpdateStudent() throws Exception {
         //Given
         StudentModel studentUpdate = new StudentModel("J", "Granados", 2L);
         String url = "/student/{studentId}";
@@ -149,7 +149,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testCreateGroup() throws Exception {
+    void testCreateGroup() throws Exception {
         //Given
         GroupModel groupDto = new GroupModel("Gamma");
         String expectedJson = objectMapper.writeValueAsString(new GroupModel("Gamma", 1L));
@@ -168,7 +168,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testGetGroup() throws Exception{
+    void testGetGroup() throws Exception{
         //Given
         Mockito.when(groupService.getGroupById(1L)).thenReturn(new GroupModel("Alpha", 1L));
         String expectedJson = objectMapper.writeValueAsString(new GroupModel("Alpha", 1L));
@@ -183,7 +183,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testUpdateGroup() throws Exception{
+    void testUpdateGroup() throws Exception{
         //Given
         GroupModel groupDto = new GroupModel("Alpha");
         String expectedJson = objectMapper.writeValueAsString(new GroupModel("Alpha", 1L));
@@ -203,7 +203,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testDeleteGroup() throws Exception{
+    void testDeleteGroup() throws Exception{
         //Given
         String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/group/{groupId}";
@@ -217,7 +217,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testCreateSubject() throws Exception {
+    void testCreateSubject() throws Exception {
         //Given
         SubjectModel subjectDto = new SubjectModel("Art");
         String expectedJson = objectMapper.writeValueAsString(new SubjectModel(1L, "Art"));
@@ -236,7 +236,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testGetSubject() throws Exception{
+    void testGetSubject() throws Exception{
         //Given
         Mockito.when(subjectService.getSubjectById(1L)).thenReturn(new SubjectModel(1L, "Art"));
         String expectedJson = objectMapper.writeValueAsString(new SubjectModel(1L, "Art"));
@@ -251,7 +251,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testUpdateSubject() throws Exception{
+    void testUpdateSubject() throws Exception{
         //Given
         SubjectModel subjectDto = new SubjectModel("Art");
         String expectedJson = objectMapper.writeValueAsString(new SubjectModel(1L, "Art"));
@@ -271,7 +271,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testDeleteSubject() throws Exception{
+    void testDeleteSubject() throws Exception{
         //Given
         String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/subject/{subjectId}";
@@ -285,7 +285,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testCreateMark() throws Exception {
+    void testCreateMark() throws Exception {
         //Given
         MarkModel markDto = new MarkModel(1L, 1L, 9.8F, null);
         String expectedJson = objectMapper.writeValueAsString(markDto);
@@ -304,7 +304,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testGetMark() throws Exception{
+    void testGetMark() throws Exception{
         //Given
         Mockito.when(marksService.getMarkById(1L)).thenReturn(new MarkModel(1L, 1L, 9.8F, null));
         String expectedJson = objectMapper.writeValueAsString(new MarkModel(1L, 1L, 9.8F, null));
@@ -319,7 +319,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testUpdateMark() throws Exception{
+    void testUpdateMark() throws Exception{
         //Given
         MarkModel markDto = new MarkModel(1L, 1L, 9.8F, null);
         String expectedJson = objectMapper.writeValueAsString(markDto);
@@ -339,7 +339,7 @@ public class SchoolControllerTests {
     }
 
     @Test
-    public void testDeleteMark() throws Exception{
+    void testDeleteMark() throws Exception{
         //Given
         String expectedJson = objectMapper.writeValueAsString(getSuccessResult());
         String url = "/mark/{markId}";

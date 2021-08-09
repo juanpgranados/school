@@ -26,7 +26,7 @@ public class StudentsService {
     public List<StudentResponseModel> list(){
         List<Student> students = studentRepository.findAll();
         List<StudentResponseModel> studentDtos = new ArrayList<>();
-        students.forEach((s) -> studentDtos.add(new StudentResponseModel(s.getId(), s.getFirstName(),
+        students.forEach(s -> studentDtos.add(new StudentResponseModel(s.getId(), s.getFirstName(),
                 s.getLastName(), s.getGroup().getId())));
         return studentDtos;
     }
@@ -35,9 +35,8 @@ public class StudentsService {
         Optional<Student> opStudent = studentRepository.findById(studentId);
         if(opStudent.isPresent()){
             Student student = opStudent.get();
-            StudentResponseModel studentDto = new StudentResponseModel(student.getId(), student.getFirstName(),
+            return new StudentResponseModel(student.getId(), student.getFirstName(),
                     student.getLastName(), student.getGroup().getId());
-            return studentDto;
         }else{
             throw new ApiException(HttpStatus.NOT_FOUND, STUDENT_NOT_FOUND);
         }

@@ -12,6 +12,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString
 public class SubjectGroupKey implements Serializable {
+    private static final long serialVersionUID = 7583418401792283197L;
     @ManyToOne
     private Subject subject;
     @ManyToOne
