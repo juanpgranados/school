@@ -93,6 +93,7 @@ mvn test
 
 -   **Java** Programming language.
 -   **Spring Data JPA** Persistence layer
+-   **H2** In memory database
 -   **Spring Security** Enables JWT security
 -   **Maven** Build automation tool.
 -   **JUnit** Unit testing framework.
