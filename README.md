@@ -51,7 +51,23 @@ PUT    /subject/{subjectId}
 POST   /groups
 DELETE /group/{groupId}
 ```
-* *Student's special reports*
+* *Mark's CRUD*
+```
+GET     /marks
+GET     /mark/{markId}
+PUT     /mark/{markId}
+POST    /mark
+DELETE  /mark/{markId}
+```
+* *Subject-teacher CRUD*
+```
+GET     /subjects/groups
+GET     /subject/{subjectId}/group/{groupId}
+PUT     /subject/group
+POST    /subject/group
+DELETE  /subject/{subjectId}/group/{groupId}
+```
+* *School's special reports*
 1. Get the mark for a particular student id
 ```
 /marks/student/{studentId}
@@ -64,3 +80,20 @@ DELETE /group/{groupId}
 ```
 /teacher/{teacherId}/student-count
 ```
+The endpoints mentioned above can be tested locally through Swagger on url http://localhost:8080/swagger-ui.html, 
+after executing the steps in the installation section.
+
+## Testing execution :satellite:
+
+*Unit tests*: built with JUnit 5. When you do the first step of the installation section, test are executed. However, to run them independently, you just need to run the following command in terminal
+```
+mvn test
+```
+## Key libraries and tools
+
+-   **Java** Programming language.
+-   **Spring Data JPA** Persistence layer
+-   **Spring Security** Enables JWT security
+-   **Maven** Build automation tool.
+-   **JUnit** Unit testing framework.
+-   **Lombok** Java library to avoid write repetitive code.
