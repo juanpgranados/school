@@ -13,12 +13,12 @@ enables the data management(CRUD) of students, marks and subjects among others.
 
 Once you have cloned the repository, you can install it on your maven repository by maven command line
 
-```
+``` bash
 mvn clean install
 ```
 
 And then, execute jar file
-```
+``` bash
 java -jar school-0.0.1-SNAPSHOT.jar
 ```
 
@@ -86,7 +86,7 @@ after executing the steps in the installation section.
 ## Testing execution :satellite:
 
 *Unit tests*: built with JUnit 5. When you do the first step of the installation section, test are executed. However, to run them independently, you just need to run the following command in terminal
-```
+``` bash
 mvn test
 ```
 ## Key libraries and tools
